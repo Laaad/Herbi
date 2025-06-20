@@ -1,0 +1,28 @@
+name: Herbi-App
+
+services:
+  postgresdb:
+    image: postgres:17.5-alpine3.22
+    container_name: herbi_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: herbi
+    ports:
+      - "5432:5432"
+    
+  django:
+    build: .
+    container_name: herbi_django_app
+    restart: always
+    depends_on:
+      - postgresdb
+    volumes:
+      - ./api:/app
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c "
+      python manage.py runverser 0.0.0.0:8000
+      "
