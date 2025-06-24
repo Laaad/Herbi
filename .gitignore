@@ -1,1 +1,10 @@
+# IDE
 .vscode/
+
+# Ignore Python compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Env variables
+.env.dev

@@ -1,0 +1,45 @@
+name: Herbi-App
+
+services:
+  postgresdb:
+    image: postgres:17.5-alpine3.22
+    container_name: herbi_db
+    restart: always
+    env_file:
+      - ./herbiapi/.env.dev  # <-- Adjust path as needed
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"
+    
+  django:
+    build: .
+    container_name: herbi_django_app
+    restart: always
+    depends_on:
+      - postgresdb
+    volumes:
+      - ./herbiapi:/app
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c "
+          if python manage.py shell -c 'from django.contrib.auth.models import User; print(User.objects.filter(username=\"admin\").exists())' | grep -q 'True'; then
+            echo 'Admin user exists, skipping app and database setup';
+          else
+            if [ ! -f manage.py ]; then 
+              django-admin startproject core .; 
+            fi &&
+            if [ ! -d chat ]; then 
+              python manage.py startapp chat; 
+            fi &&
+            rm -f chat/migrations/0001_initial.py &&
+            python manage.py migrate &&
+            python manage.py makemigrations &&
+            python manage.py migrate chat --fake &&
+            python manage.py shell -c 'from django.contrib.auth.models import User; User.objects.create_superuser(\"admin\", \"admin@example.com\", \"admin\");' ;
+          fi &&
+          python manage.py runserver 0.0.0.0:8000
+        "
