@@ -5,14 +5,14 @@ services:
     image: postgres:17.5-alpine3.22
     container_name: herbi_db
     restart: always
-    env_file:
-      - ./herbiapi/.env.dev  # <-- Adjust path as needed
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     ports:
       - "5432:5432"
+    volumes:
+      - herbi_postgres_data:/var/lib/postgresql/data
     
   django:
     build: .
@@ -43,3 +43,6 @@ services:
           fi &&
           python manage.py runserver 0.0.0.0:8000
         "
+
+volumes:
+  herbi_postgres_data:
