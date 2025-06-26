@@ -1,11 +1,10 @@
 from .base import FoodClassifier
-from openai import OpenAI
+from utils.llm_interface import LLMInterface
 import json
-from core.settings.base import OPENAI_API_KEY
 
-class GPTFoodClassifier(FoodClassifier):
-    def __init__(self):
-        self.client = OpenAI(api_key=OPENAI_API_KEY)
+class LLMFoodClassifier(FoodClassifier):
+    def __init__(self, llm: LLMInterface):
+          self.llm = llm
 
     def _analyze(self, foods) -> dict:
         prompt = (
@@ -14,22 +13,17 @@ class GPTFoodClassifier(FoodClassifier):
             '{"is_vegetarian": true or false, "is_vegan": true or false}'
             'Respond ONLY with a valid text object, no explanation or text outside the JSON.'
         )
-
-        response = self.client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[{"role": "user", "content": prompt}],
-        )
-
-        content = response.choices[0].message.content.strip()
+        response = self.llm.ask(prompt=prompt)
+        
         try:
-            result = json.loads(content.replace("'", "'"))
+            result = json.loads(response.replace("'", "'"))
         except json.JSONDecodeError:
-                raise ValueError(f"Invalid JSON response from OpenAI: {content}")
+            raise ValueError(f"Invalid JSON response: {response}")
 
         if not all(k in result for k in ("is_vegetarian", "is_vegan")):
-                raise ValueError("Missing expected keys in response")
+            raise ValueError("Missing expected keys in response")
         if not isinstance(result["is_vegetarian"], bool) or not isinstance(result["is_vegan"], bool):
-                raise ValueError("Values must be boolean")
+            raise ValueError("Values must be boolean")
 
         return result
 

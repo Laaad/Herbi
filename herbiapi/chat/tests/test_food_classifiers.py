@@ -1,10 +1,13 @@
 import pytest
-from chat.food_classifiers.gpt_classifier import GPTFoodClassifier
+from chat.food_classifiers.llm_classifier import LLMFoodClassifier
+from utils.openai_client import OpenAILLM
+from core.settings.base import OPENAI_API_KEY
 
-class TestGPTFoodClassifier:
+class TestLLMFoodClassifier:
     @pytest.fixture
     def classifier(self):
-        return GPTFoodClassifier()
+        openai_client = OpenAILLM(api_key=OPENAI_API_KEY)
+        return LLMFoodClassifier(llm=openai_client)
 
     def test_analyze_meat_detection(self, classifier):
         result = classifier._analyze(["egg", "rice"])
