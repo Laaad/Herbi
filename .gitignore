@@ -7,4 +7,5 @@ __pycache__/
 *$py.class
 
 # Env variables
-.env.dev
+.env.django.dev
+.env

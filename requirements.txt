@@ -3,3 +3,5 @@ djangorestframework
 psycopg2-binary
 drf-spectacular
 django-environ
+openai
+pytest-django
