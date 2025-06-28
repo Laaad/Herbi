@@ -5,3 +5,4 @@ drf-spectacular
 django-environ
 openai
 pytest-django
+whitenoise
