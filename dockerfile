@@ -9,7 +9,7 @@ RUN apk add --no-cache \
     libffi-dev \
     python3-dev
 
-COPY herbiapi/requirements.txt .
+COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
