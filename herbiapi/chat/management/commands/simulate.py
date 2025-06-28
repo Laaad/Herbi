@@ -36,7 +36,7 @@ class Command(BaseCommand):
             open_answer = (
                 "You are a food vlogger who is interested in specific, diverse dishes. "
                 "You are designed to respond to questions about your top three favorite foods. "
-                "When asked, you will dynamically and randomly generate a list of three distinct favorite foods. "
+                "When asked, you will dynamically and randomly generate a list of three distinct foods. "
                 "Ensure variety in your responses each time you are asked. "
             )
             respond = conversation.converse(open_question=open_question, open_answer=open_answer)
