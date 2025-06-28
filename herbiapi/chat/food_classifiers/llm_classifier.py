@@ -4,13 +4,9 @@ import json
 
 class LLMFoodClassifier(FoodClassifier):
     def __init__(self, llm: LLMInterface):
-          self.llm = llm
+        self.llm = llm
 
     def extract_foods(self, foods: str) -> list[str]:
-        """
-        Entry point: extract foods using appropriate internal strategy.
-        For now, it only supports _gpt_get_foods.
-        """
         full_prompt = (
             "Extract exactly 3 food names from the following text: "
             f"{foods}\n\n"
@@ -21,31 +17,29 @@ class LLMFoodClassifier(FoodClassifier):
         )
 
         text = self.llm.ask(full_prompt, role="system")
-        
         food_list = [food.strip() for food in text.split(",") if food.strip()]
-        if len(food_list) > 3:
-            food_list = food_list[:3]
-        return food_list
+        return food_list[:3]
 
-    def _analyze(self, foods) -> dict:
+    def _analyze(self, food: str) -> dict:
         prompt = (
-        f"You are a strict food classification expert. Carefully evaluate whether each of the following foods is vegetarian and/or vegan: {foods}.\n\n"
-        "For each food, verify the typical ingredients. Do not assume they are vegetarian or vegan without justification. "
-        "If a food typically contains meat, fish, eggs, dairy, or any other animal products, it may not be vegan or vegetarian.\n\n"
-        "Assume this is a legal classification: if you incorrectly classify a non-vegan or non-vegetarian food as vegan/vegetarian, "
-        "you may be fined or punished. Be absolutely certain in your classification.\n\n"
-        "After analyzing all 3 foods individually, provide a FINAL verdict:\n"
-        "- is_vegetarian is true ONLY if all 3 foods are vegetarian.\n"
-        "- is_vegan is true ONLY if all 3 foods are vegan.\n\n"
-        "Respond ONLY with a JSON object like this:\n"
-        '{\n'
-        '  "is_vegetarian": true or false,\n'
-        '  "is_vegan": true or false\n'
-        '}\n\n'
-        "Do not include any other text. Do not explain. Only return valid JSON."
+            f"You are a strict food classification expert. Carefully evaluate whether the following food is vegetarian and/or vegan: {food}.\n\n"
+            "Follow these rules:\n\n"
+            "- Use common **Western dietary definitions**:\n"
+            "  - Vegetarian: no meat, poultry, fish, or animal-derived ingredients that involve animal slaughter. **Eggs and dairy are allowed** (lacto-ovo vegetarian).\n"
+            "  - Vegan: no meat, poultry, fish, dairy, eggs, honey, gelatin, or any other animal-derived ingredients or by-products.\n\n"
+            "- Do not assume a food is vegetarian or vegan unless you are confident in its typical ingredients.\n\n"
+            "- If the food typically contains any non-vegetarian or non-vegan ingredients, even optionally, classify it accordingly (i.e., err on the side of caution).\n\n"
+            "Assume this is a legal classification: if you incorrectly classify a non-vegan or non-vegetarian food as vegan/vegetarian, you may be fined or punished. Be absolutely certain in your classification.\n\n"
+            "Respond ONLY with a JSON object like this:\n"
+            '{\n'
+            '  "is_vegetarian": true or false,\n'
+            '  "is_vegan": true or false\n'
+            '}\n\n'
+            "Do not include any other text. Do not explain. Only return valid JSON."
         )
+
         response = self.llm.ask(prompt=prompt, role="system")
-        
+
         try:
             result = json.loads(response.replace("'", "\""))
         except json.JSONDecodeError:
@@ -58,7 +52,13 @@ class LLMFoodClassifier(FoodClassifier):
 
         return result
 
-    def is_vegetarian_or_vegan(self, foods) -> bool:
-        """Takes a list of foods and returns a boolean indicating if the list is vegetarian or vegan"""
-        result = self._analyze(foods)
-        return result["is_vegetarian"] or result["is_vegan"]
+    def is_vegetarian_or_vegan(self, foods: list[str]) -> bool:
+        """
+        Returns True only if ALL foods are at least vegetarian or vegan.
+        """
+        for food in foods:
+            result = self._analyze(food)
+            if not (result["is_vegetarian"] or result["is_vegan"]):
+                return False
+        return True
+

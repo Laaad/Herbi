@@ -9,10 +9,14 @@ class TestLLMFoodClassifier:
         openai_client = OpenAILLM(api_key=OPENAI_API_KEY)
         return LLMFoodClassifier(llm=openai_client)
 
-    def test_analyze_meat_detection(self, classifier):
-        result = classifier._analyze(["egg", "rice"])
-        assert result['is_vegan'] is False
-        assert result['is_vegetarian'] is True
+    def test_analyze(self, classifier):
+        result1 = classifier._analyze("egg")
+        assert result1['is_vegan'] is False
+        assert result1['is_vegetarian'] is True
+        result2 = classifier._analyze("tofu")
+        assert result2['is_vegan'] is True
+        assert result2['is_vegetarian'] is True
+
 
     def test_is_vegetarian_or_vegan_true(self, classifier):
         assert classifier.is_vegetarian_or_vegan(["tofu", "rice", "egg"]) is True
