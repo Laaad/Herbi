@@ -3,7 +3,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from chat.food_classifiers.llm_classifier import LLMFoodClassifier
 from chat.models import SimulatedConversation
-from core.settings.base import OPENAI_API_KEY
+from core.settings import OPENAI_API_KEY
 from django.core.management.base import BaseCommand
 from utils.conversation_simulator import ConversationSimulator
 from utils.openai_client import OpenAILLM

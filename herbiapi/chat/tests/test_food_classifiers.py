@@ -1,7 +1,7 @@
 import pytest
 from chat.food_classifiers.llm_classifier import LLMFoodClassifier
 from utils.openai_client import OpenAILLM
-from core.settings.base import OPENAI_API_KEY
+from core.settings import OPENAI_API_KEY
 
 class TestLLMFoodClassifier:
     @pytest.fixture
