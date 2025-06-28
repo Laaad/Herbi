@@ -139,4 +139,4 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # OPENAI KEY
-OPENAI_API_KEY = env("OPENAI_SECRET")
+OPENAI_API_KEY = env("OPENAI_SECRET", default="")
