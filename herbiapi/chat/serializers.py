@@ -4,4 +4,4 @@ from .models import SimulatedConversation
 class SimulatedConversationSerializer(serializers.ModelSerializer[SimulatedConversation]):
     class Meta:
         model = SimulatedConversation
-        fields = ['id', 'is_veg', 'foods']
+        fields = ['id', 'is_veg', 'foods', 'user']
