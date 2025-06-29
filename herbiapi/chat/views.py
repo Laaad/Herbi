@@ -8,7 +8,24 @@ from .serializers import SimulatedConversationSerializer
 
 @extend_schema(
     tags=["Conversations"],
-    summary="List Vegetarian/Vegan Conversations",
+    summary="List all foods extracted from the conversations",
+    description="List all foods extracted from the conversations",
+)
+class ConversationsView(generics.ListAPIView):
+    """
+    View to list the result of all conversations providing the foods lists.
+    """
+    authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = SimulatedConversationSerializer
+
+    def get_queryset(self):
+        return SimulatedConversation.objects.all()
+
+
+@extend_schema(
+    tags=["Conversations"],
+    summary="List Vegetarian/Vegan foods extracted from the conversations",
     description="Retrieve all conversations that have been classified as vegetarian or vegan, providing food lists and classification details.",
 )
 class VegetarianOrVeganConversationsView(generics.ListAPIView):
