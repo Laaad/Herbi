@@ -15,7 +15,6 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from chat.views import VegetarianOrVeganConversationsView
 from django.contrib import admin
 
 from django.urls import path, include
@@ -23,9 +22,5 @@ from django.urls import path, include
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/login/", include("login.urls")),
-    path(
-        "api/veg-conversations/",
-        VegetarianOrVeganConversationsView.as_view(),
-        name="veg-conversations",
-    ),
+    path("api/veg-conversations/", include("chat.urls")),
 ]
