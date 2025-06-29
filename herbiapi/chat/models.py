@@ -1,8 +1,16 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 
 class SimulatedConversation(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        help_text="The user who owns this simulated conversation.",
+        null=True,
+        blank=True
+    )
     foods = models.JSONField(
         help_text="A list or dictionary of foods consumed. Expected to be a structured JSON object."
     )
@@ -13,4 +21,4 @@ class SimulatedConversation(models.Model):
         auto_now_add=True,
         help_text="Timestamp when this simulated conversation was created."
     )
-
+    

@@ -7,6 +7,7 @@ from core.settings import OPENAI_API_KEY
 from django.core.management.base import BaseCommand
 from utils.conversation_simulator import ConversationSimulator
 from utils.openai_client import OpenAILLM
+from django.contrib.auth.models import User
 
 model = OpenAILLM(api_key=OPENAI_API_KEY)
 asker = OpenAILLM(api_key=OPENAI_API_KEY)
@@ -29,21 +30,21 @@ class Command(BaseCommand):
     def _run_single_simulation(self):
         try:
             open_question = (
-                "You are a chatbot designed to ask users about their favorite foods. "
+                "You are ChatGPT A designed to ask users about their favorite foods. "
                 "Start by asking for their top three favorite foods. "
                 "Only ask about their top three favorite foods, no other questions or comments."
             )
             open_answer = (
-                "You are a food vlogger who is interested in specific, diverse dishes. "
+                "You are ChatGPT B, a food vlogger who is interested in specific, diverse dishes. "
                 "You are designed to respond to questions about your top three favorite foods. "
                 "When asked, you will dynamically and randomly generate a list of three distinct foods. "
                 "Ensure variety in your responses each time you are asked. "
             )
             respond = conversation.converse(open_question=open_question, open_answer=open_answer)
-
+            user = User.objects.create(username=f"simulated_user_{time.time()}")
             is_veg = classifier.is_vegetarian_or_vegan(respond.answer)
             foods = classifier.extract_foods(respond.answer)
-            data = {"foods": foods, "is_veg": is_veg}
+            data = {"foods": foods, "is_veg": is_veg, "user": user}
             SimulatedConversation.objects.create(**data)
             time.sleep(0.5)
         except Exception as e:
