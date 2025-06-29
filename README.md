@@ -69,13 +69,19 @@ Once the server is running, you can access the interactive API documentation:
 ## 🔌 API Endpoints
 
 ### Authentication
-- `POST /login/` - User login
+- `POST /login/` - User login with username and password
 
 ### Conversations
-- `GET /veg-conversations/` - List vegetarian/vegan conversations
+- `GET /conversations/` - List all conversations with extracted food data
+- `GET /conversations/vegs/` - List only vegetarian/vegan conversations
 
 ### Admin
 - `GET /admin/` - Django admin interface
+
+### Documentation
+- `GET /` - Swagger UI documentation
+- `GET /redoc/` - ReDoc documentation
+- `GET /schema/` - OpenAPI schema
 
 ## 🏗️ Project Structure
 
